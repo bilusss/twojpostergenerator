@@ -2,6 +2,8 @@
 from PIL import Image, ImageDraw, ImageFont
 import PIL
 from collections import Counter
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
 
 #   BASE - convert
 
@@ -58,7 +60,11 @@ draw.text((220,4550), "Released by:", fill=(0,0,0), font=released_by_font, spaci
 label = ImageFont.truetype(r'LeagueGothic-Regular.ttf', 150)
 draw.text((220,4700), "A$AP Rocky Recordings", fill=(0,0,0), font=label, spacing=0)
 
-#   Spotify scan
+#   SPOTIFY
+
+#spotify code here
+
+#   COLORS
 
 def myround(x, base=5):
     return base * round(x/base)
@@ -85,10 +91,59 @@ for color, count in counter.most_common():
 for i in range(5):
     draw.rectangle(xy=(220+150*i, 5100, 370+150*i, 5250), fill=most_common_colors[i])
 
+#   TEXT - Tracklist
+
+def featstrip(s: str):
+    if "(feat" in s:
+        ind_s = s.index("(feat")
+        s_ = s[0:ind_s-1]
+        return s_
+    if "(with" in s:
+        ind_s = s.index("(with")
+        s_ = s[0:ind_s-1]
+        return s_
+    return s
+
+file_auth_manager = open('auth_manager.txt', 'r')
+for i in file_auth_manager:
+    x = i.split(sep=';')
+auth_manager = SpotifyClientCredentials(x[0], x[1])
+sp = spotipy.Spotify(auth_manager=auth_manager)
+
+artist_name = "a$ap rocky"
+q_ = "artist:<"+artist_name+">"
+a = sp.search(q=q_, type='artist', limit=1)
+print("artist's id   :", a['artists']['items'][0]['id'])
+
+album_name = "testing"
+q_2 = "album:<"+album_name+">"
+b = sp.search(q=q_2, type='album', limit=1)
+
+album_id = b['albums']['items'][0]['id']
+released_date = b['albums']['items'][0]['release_date']
+
+print("album's id    :", album_id)
+print("released date :", released_date)
+album_tracks_data = sp.album_tracks(album_id=album_id,market="US", limit=50)
+tracklist = []
+for x in album_tracks_data['items']:
+    tracklist.append(x['name'])
+
+print("tracklist     :")
+print(tracklist)
+print()
+tracklist_font = ImageFont.truetype(r'LTSuperiorMono-Regular.otf', 70)
+
+# for i in range(len(tracklist)):
+#     text = str(i+1)+"."+featstrip(tracklist[i])
+#     draw.text((1400,4150+i*80), text, fill=(0,0,0), font=tracklist_font, spacing=50)
+
+tracklisttextall = ""
+for i in range(len(tracklist)):
+    text = str(i+1)+"."+featstrip(tracklist[i])+"\n"
+    tracklisttextall+=text
+draw.text((1700,3650+i), tracklisttextall, fill=(0,0,0), font=tracklist_font, spacing=10)
 
 #   SAVE - final
 
 img_final.save('final_result.jpg')
-# img_test = Image.open('white_sheet_3300x5000.jpg')
-# img_test = img_test.crop((0, 0, 3200, 5000))
-# img_test.save('white_sheet_3200x5000.jpg')
