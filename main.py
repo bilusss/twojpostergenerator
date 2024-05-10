@@ -4,6 +4,75 @@ import PIL
 from collections import Counter
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+import requests
+
+#   SPOTIFY API
+
+file_auth_manager = open('auth_manager.txt', 'r')
+for i in file_auth_manager:
+    x = i.split(sep=';')
+auth_manager = SpotifyClientCredentials(x[0], x[1])
+sp = spotipy.Spotify(auth_manager=auth_manager)
+
+# name
+artist_name = "a$ap rocky" #    input("Artist name: ") #a$ap rocky, travis scott
+q = "artist:<"+artist_name+">"
+a = sp.search(q=q, type='artist', limit=1)
+artist_uri = a['artists']['items'][0]['id']
+
+b = sp.artist(artist_uri)
+artist_name = b['name']# overwriting artist's name
+print("artist's name :", artist_name)
+print("artist's id   :", artist_uri)
+
+# album
+
+def Label(s: str):
+    if "record" in s.lower():
+        ind = s.lower().index("record")
+        for i in range(ind, len(s)):
+            if s[i] == " ":
+                ind = i
+                break
+        s = s[:ind]
+    for i in range(len(s)-3):
+        try:
+            if 2030>=int(s[i:i+4])>=1000:
+                s=s[i+5:]
+                break
+        except ValueError:
+            pass
+    return s
+
+
+
+
+album_name = "testing" #    input("Album name: ") #testing, utopia
+q = "album:<"+album_name+">"+" "+"artist:<"+artist_name+">"
+c = sp.search(q=q, type='album', limit=1)
+album_id = c['albums']['items'][0]['id']
+d = sp.album(album_id=album_id)
+album_name = d['name']
+released_by = d['copyrights'][0]['text']
+print("album's name  :", album_name)
+print("album's id    :", album_id)
+print("released by   :", Label(released_by))
+
+# released date
+released_date = c['albums']['items'][0]['release_date']
+print("released date :", released_date)
+
+# tracks
+album_tracks_data = sp.album_tracks(album_id=album_id,market="US", limit=50)
+
+print("tracklist     :", end=" ")
+tracklist = []
+for count, x in enumerate(album_tracks_data['items'], 1):
+    if count > 1:
+        tracklist.append(x['name'])
+        print("               ", count, x['name'])
+        continue
+    print(count, x['name'], " ")
 
 #   BASE - convert
 
@@ -33,12 +102,12 @@ draw.line(((200, 3400), (3200, 3400)), fill=(0, 0, 0), width=10)
 #   TEXT - album title
 
 title_font = ImageFont.truetype(r'LeagueGothic-Regular.ttf', size=300)
-draw.text((200, 3550), "TESTING", fill=(0, 0, 0), font=title_font, spacing=10)
+draw.text((200, 3550), album_name, fill=(0, 0, 0), font=title_font, spacing=10)
 
 #   TEXT - artist nickname
 
 artist_font = ImageFont.truetype(r'LeagueGothic-CondensedRegular.ttf', 250)
-draw.text((220, 3850),"A$AP Rocky", fill=(0,0,0), font=artist_font, spacing=10)
+draw.text((220, 3850),artist_name, fill=(0,0,0), font=artist_font, spacing=10)
 
 #   TEXT - release date
 
@@ -48,7 +117,7 @@ draw.text((220,4150), "Release date:", fill=(0,0,0), font=release_date_font, spa
 #   TEXT - date
 
 date_font = ImageFont.truetype(r'LeagueGothic-Regular.ttf', 150)
-draw.text((220,4300), "25.05.2018", fill=(0,0,0), font=date_font, spacing=0)
+draw.text((220,4300), released_date, fill=(0,0,0), font=date_font, spacing=0)
 
 #   TEXT - released by
 
@@ -62,7 +131,15 @@ draw.text((220,4700), "A$AP Rocky Recordings", fill=(0,0,0), font=label, spacing
 
 #   SPOTIFY
 
-#spotify code here
+def fetch_image(url):
+    img_data = requests.get(url).content
+    with open('spotify_code.jpg', 'wb') as handler:
+        handler.write(img_data)
+
+url = "https://scannables.scdn.co/uri/plain/jpeg/FFFFFF/black/640/spotify:album:"+album_id
+fetch_image(url)
+spotify_code = Image.open('spotify_code.jpg')
+img_final.paste(spotify_code, (220, 4900))
 
 #   COLORS
 
@@ -104,39 +181,7 @@ def featstrip(s: str):
         return s_
     return s
 
-file_auth_manager = open('auth_manager.txt', 'r')
-for i in file_auth_manager:
-    x = i.split(sep=';')
-auth_manager = SpotifyClientCredentials(x[0], x[1])
-sp = spotipy.Spotify(auth_manager=auth_manager)
-
-artist_name = "a$ap rocky"
-q_ = "artist:<"+artist_name+">"
-a = sp.search(q=q_, type='artist', limit=1)
-print("artist's id   :", a['artists']['items'][0]['id'])
-
-album_name = "testing"
-q_2 = "album:<"+album_name+">"
-b = sp.search(q=q_2, type='album', limit=1)
-
-album_id = b['albums']['items'][0]['id']
-released_date = b['albums']['items'][0]['release_date']
-
-print("album's id    :", album_id)
-print("released date :", released_date)
-album_tracks_data = sp.album_tracks(album_id=album_id,market="US", limit=50)
-tracklist = []
-for x in album_tracks_data['items']:
-    tracklist.append(x['name'])
-
-print("tracklist     :")
-print(tracklist)
-print()
 tracklist_font = ImageFont.truetype(r'LTSuperiorMono-Regular.otf', 70)
-
-# for i in range(len(tracklist)):
-#     text = str(i+1)+"."+featstrip(tracklist[i])
-#     draw.text((1400,4150+i*80), text, fill=(0,0,0), font=tracklist_font, spacing=50)
 
 tracklisttextall = ""
 for i in range(len(tracklist)):
