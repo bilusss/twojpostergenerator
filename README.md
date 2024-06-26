@@ -1,5 +1,4 @@
-# twojpostergenerator
-# Project Description
+# TwojPosterGenerator Description
 
 This project automatically creates visually appealing posters with information about your favorite music albums using data fetched from Spotify. Below is a detailed description of how the program works.
 
@@ -20,6 +19,8 @@ This project automatically creates visually appealing posters with information a
 
 5. **Saving the Result**:
     - The finished poster is saved as `final_result.jpg`, which can be used for decorative or promotional purposes.
+    ![example](final_result.jpg)
+
 
 ## Usage
 

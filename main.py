@@ -63,7 +63,6 @@ released_by = Label(released_by)
 album_cover_url = c['albums']['items'][0]['images'][0]['url']
 response = requests.get(album_cover_url)
 img = Image.open(BytesIO(response.content))
-img = Image.open('album_cover_640x640px.jpg')
 resized_img = img.resize((3000, 3000), Image.LANCZOS)
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -105,8 +104,7 @@ draw.line((3350, 25, 0, 25), fill=(0, 0, 0), width=50)
 
 #   PASTE - album cover
 
-img_cover = Image.open('album_cover_3000x3000px.jpg')
-img_final.paste(img_cover, (200, 250))
+img_final.paste(resized_img, (200, 250))
 
 #   UNDERLINE - draw
 
@@ -172,8 +170,8 @@ img_final.paste(spotify_code, (220, 4900))
 def myround(x, base=5):
     return base * round(x/base)
 
-pixels = img_cover.load()
-width, height = img_cover.size
+pixels = img.load()
+width, height = img.size
 colors = []
 for y in range(height):
     for x in range(width):
