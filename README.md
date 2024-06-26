@@ -19,8 +19,8 @@ This project automatically creates visually appealing posters with information a
 
 5. **Saving the Result**:
     - The finished poster is saved as `final_result.jpg`, which can be used for decorative or promotional purposes.
-    ![example](final_result.jpg)
 
+![example](final_result.jpg)
 
 ## Usage
 
@@ -64,5 +64,9 @@ To install the required libraries, use the following command:
 ```bash
 pip install pillow spotipy requests
 ```
+
+## Disclaimer
+
+This project is intended for personal use only and is not meant for commercial purposes. The author does not earn any money from this project. Any use of this code for profit is strictly prohibited. If you believe this project violates any copyrights, please contact me through the email associated with my GitHub account.
 
 Enjoy automatically creating posters of your favorite albums!
