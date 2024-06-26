@@ -63,18 +63,17 @@ released_by = Label(released_by)
 album_cover_url = c['albums']['items'][0]['images'][0]['url']
 response = requests.get(album_cover_url)
 img = Image.open(BytesIO(response.content))
-img.save('album_cover_640x640px.jpg')
 img = Image.open('album_cover_640x640px.jpg')
 resized_img = img.resize((3000, 3000), Image.LANCZOS)
-resized_img.save('album_cover_3000x3000px.jpg')
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #   $$$$$ IF THERE IS ANY FAIL IN LABEL TEXT, EDIT IT DOWN HERE $$$$$
 
-released_by = "Def Jam Recordings"
+# released_by = "Def Jam Recordings"
 print("album's name  :", album_name)
 print("album's id    :", album_id)
 print("released by   :", released_by)
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 # released date
 released_date = c['albums']['items'][0]['release_date']
@@ -92,10 +91,9 @@ for count, x in enumerate(album_tracks_data['items'], 1):
         continue
     print(count, x['name'], " ")
 
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-#   BASE - convert
+#   BASE
 
-img_final = Image.open('white_sheet_3400x5600.jpg')
+img_final = Image.new('RGB', (3400, 5600), (255, 255, 255))
 
 #   BASE - outdraw
 
