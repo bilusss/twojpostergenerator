@@ -95,11 +95,7 @@ for count, x in enumerate(album_tracks_data['items'], 1):
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #   BASE - convert
 
-img_base = Image.open('5000x7000_base.png')
-left, upper, right, lower = 0, 0, 3400, 5600
-img_base = img_base.crop((left, upper, right, lower))
-img_base.save('white_sheet_final_3400x5600.jpg')
-img_final = Image.open('white_sheet_final_3400x5600.jpg')
+img_final = Image.open('white_sheet_3400x5600.jpg')
 
 #   BASE - outdraw
 
