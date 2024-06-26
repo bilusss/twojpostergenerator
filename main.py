@@ -5,6 +5,13 @@ from collections import Counter
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import requests
+import os
+from io import BytesIO
+
+#   current directory
+
+current_dir = os.path.dirname(__file__)
+fonts_directory = os.path.join(current_dir, 'fonts')
 
 #   SPOTIFY API
 
@@ -15,7 +22,7 @@ auth_manager = SpotifyClientCredentials(x[0], x[1])
 sp = spotipy.Spotify(auth_manager=auth_manager)
 
 # name
-artist_name = "a$ap rocky" #    input("Artist name: ") #a$ap rocky, travis scott
+artist_name = "linkin park" #    input("Artist name: ")==============================
 q = "artist:<"+artist_name+">"
 a = sp.search(q=q, type='artist', limit=1)
 artist_uri = a['artists']['items'][0]['id']
@@ -45,18 +52,29 @@ def Label(s: str):
     return s
 
 
-
-
-album_name = "testing" #    input("Album name: ") #testing, utopia
+album_name = "meteora" #input("Album name: ")============================================
 q = "album:<"+album_name+">"+" "+"artist:<"+artist_name+">"
 c = sp.search(q=q, type='album', limit=1)
 album_id = c['albums']['items'][0]['id']
 d = sp.album(album_id=album_id)
 album_name = d['name']
 released_by = d['copyrights'][0]['text']
+released_by = Label(released_by)
+album_cover_url = c['albums']['items'][0]['images'][0]['url']
+response = requests.get(album_cover_url)
+img = Image.open(BytesIO(response.content))
+img.save('album_cover_640x640px.jpg')
+img = Image.open('album_cover_640x640px.jpg')
+resized_img = img.resize((3000, 3000), Image.LANCZOS)
+resized_img.save('album_cover_3000x3000px.jpg')
+
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#   $$$$$ IF THERE IS ANY FAIL IN LABEL TEXT, EDIT IT DOWN HERE $$$$$
+
+released_by = "Def Jam Recordings"
 print("album's name  :", album_name)
 print("album's id    :", album_id)
-print("released by   :", Label(released_by))
+print("released by   :", released_by)
 
 # released date
 released_date = c['albums']['items'][0]['release_date']
@@ -74,6 +92,7 @@ for count, x in enumerate(album_tracks_data['items'], 1):
         continue
     print(count, x['name'], " ")
 
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #   BASE - convert
 
 img_base = Image.open('5000x7000_base.png')
@@ -92,44 +111,57 @@ draw.line((3350, 25, 0, 25), fill=(0, 0, 0), width=50)
 
 #   PASTE - album cover
 
-img_cover = Image.open('rocky_testing.jpg')
+img_cover = Image.open('album_cover_3000x3000px.jpg')
 img_final.paste(img_cover, (200, 250))
 
 #   UNDERLINE - draw
 
 draw.line(((200, 3400), (3200, 3400)), fill=(0, 0, 0), width=10)
 
-#   TEXT - album title
+#   TEXT - album title - LeagueGothic-Regular.ttf
 
-title_font = ImageFont.truetype(r'LeagueGothic-Regular.ttf', size=300)
+font_name = "LeagueGothic-Regular.ttf"
+font_path = f"{fonts_directory}/{font_name}"
+release_date_font = ImageFont.truetype(font_path, 120)
+title_font = ImageFont.truetype(font_path, size=300)
 draw.text((200, 3550), album_name, fill=(0, 0, 0), font=title_font, spacing=10)
 
-#   TEXT - artist nickname
+#   TEXT - artist nickname - LeagueGothic-CondensedRegular.ttf
 
-artist_font = ImageFont.truetype(r'LeagueGothic-CondensedRegular.ttf', 250)
+font_name = "LeagueGothic-CondensedRegular.ttf"
+font_path = f"{fonts_directory}/{font_name}"
+artist_font = ImageFont.truetype(font_path, 250)
 draw.text((220, 3850),artist_name, fill=(0,0,0), font=artist_font, spacing=10)
 
-#   TEXT - release date
+#   TEXT - release date - LTSuperiorMono-Regular.otf
 
-release_date_font = ImageFont.truetype(r'LTSuperiorMono-Regular.otf', 120)
+font_name = "LTSuperiorMono-Regular.otf"
+font_path = f"{fonts_directory}/{font_name}"
+release_date_font = ImageFont.truetype(font_path, 120)
 draw.text((220,4150), "Release date:", fill=(0,0,0), font=release_date_font, spacing=0)
 
-#   TEXT - date
+#   TEXT - date - LeagueGothic-Regular.ttf
 
-date_font = ImageFont.truetype(r'LeagueGothic-Regular.ttf', 150)
+font_name = "LeagueGothic-Regular.ttf"
+font_path = f"{fonts_directory}/{font_name}"
+date_font = ImageFont.truetype(font_path, 150)
 draw.text((220,4300), released_date, fill=(0,0,0), font=date_font, spacing=0)
 
-#   TEXT - released by
+#   TEXT - released by - LTSuperiorMono-Regular.otf
 
-released_by_font = ImageFont.truetype(r'LTSuperiorMono-Regular.otf', 120)
+font_name = "LTSuperiorMono-Regular.otf"
+font_path = f"{fonts_directory}/{font_name}"
+released_by_font = ImageFont.truetype(font_path, 120)
 draw.text((220,4550), "Released by:", fill=(0,0,0), font=released_by_font, spacing=0)
 
-#   TEXT - label
+#   TEXT - label - LeagueGothic-Regular.ttf
 
-label = ImageFont.truetype(r'LeagueGothic-Regular.ttf', 150)
-draw.text((220,4700), "A$AP Rocky Recordings", fill=(0,0,0), font=label, spacing=0)
+font_name = "LeagueGothic-Regular.ttf"
+font_path = f"{fonts_directory}/{font_name}"
+label = ImageFont.truetype(font_path, 150)
+draw.text((220,4700), released_by, fill=(0,0,0), font=label, spacing=0)
 
-#   SPOTIFY
+#   SPOTIFY code
 
 def fetch_image(url):
     img_data = requests.get(url).content
@@ -165,8 +197,15 @@ for color, count in counter.most_common():
     if all(color_difference(color, c) for c in most_common_colors):
         most_common_colors.append(color)
 
-for i in range(5):
-    draw.rectangle(xy=(220+150*i, 5100, 370+150*i, 5250), fill=most_common_colors[i])
+i, j = 0, 0
+while i < 5:
+    try:
+        draw.rectangle(xy=(220+150*i, 5100, 370+150*i, 5250), fill=most_common_colors[j])
+    except IndexError:
+        j = 0
+        draw.rectangle(xy=(220+150*i, 5100, 370+150*i, 5250), fill=most_common_colors[0])
+    i+=1
+    j+=1
 
 #   TEXT - Tracklist
 
@@ -181,7 +220,9 @@ def featstrip(s: str):
         return s_
     return s
 
-tracklist_font = ImageFont.truetype(r'LTSuperiorMono-Regular.otf', 70)
+font_name = "LTSuperiorMono-Regular.otf"
+font_path = f"{fonts_directory}/{font_name}"
+tracklist_font = ImageFont.truetype(font_path, 70)
 
 tracklisttextall = ""
 for i in range(len(tracklist)):
